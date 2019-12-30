@@ -1,0 +1,13 @@
+window main_menu {
+  width: 400
+  height: 300
+  show_frame: false
+  button new_game {
+    text: "New Game"
+    action: NEW_GAME
+  }
+  button quit {
+    text: "Quit"
+    action: QUIT
+  }
+}
