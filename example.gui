@@ -10,4 +10,12 @@ window main_menu {
     text: "Quit"
     action: QUIT
   }
+  row health {
+    label health {
+      text: "Health"
+    }
+    textfield health {
+      ??? // data binding?
+    }
+  }
 }
