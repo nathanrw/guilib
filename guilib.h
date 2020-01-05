@@ -130,7 +130,6 @@ struct nui_command {
     nui_widget_id widget;
 };
 
-
 //----- Update
 
 // The UI doesn't have its own main loop, so the application must inform it of 
