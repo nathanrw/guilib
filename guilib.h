@@ -8,6 +8,13 @@
 //   - abstract support for sounds (inject, or return...)
 //   - renderer agnostic - but try to do as much work as possible
 
+#ifndef NUI_
+#define NUI_
+
+#define NUI_API // TODO: symbols
+
+#include "stdint.h"
+
 struct nui_gui;
 struct nui_data;
 
@@ -18,7 +25,8 @@ typedef const char* nui_utf8;
 typedef uint64_t nui_size;
 typedef float nui_real;
 
-// Widget identifier. 0 always identifies the root widget, which always exists and cannot be destroyed.
+// Widget identifier. 0 always identifies the root widget, which always exists
+// and cannot be destroyed.
 typedef uint32_t nui_widget_id;
 
 enum nui_widget_type {
@@ -26,18 +34,37 @@ enum nui_widget_type {
     NUI_WIDGET_TYPE_BUTTON
 };
 
-enum nui_error {
-    NUI_ERROR_OK = 0,
-    NUI_ERROR_UNKNOWN
-}
+enum nui_error_code {
+  NUI_ERROR_OK = 0,
+  NUI_ERROR_UNKNOWN
+};
+
+
+
+//----- Setup
+
+NUI_API bool nui_create_gui(struct nui_gui** out);
+
+NUI_API bool nui_destroy_gui(struct nui_gui* gui);
+
+NUI_API enum nui_error_code nui_get_last_error_code(struct nui_gui* gui);
+
+NUI_API nui_utf8 nui_get_last_error_message(struct nui_gui* gui);
+
+NUI_API void nui_log_error(
+    struct nui_gui* gui,
+    enum nui_error_code code,
+    nui_utf8 message
+);
+
 
 
 //----- Data node interface
 
 struct nui_data;
-typedef enum nui_error nui_data_get_child_node_by_name_func(
+typedef bool nui_data_get_child_node_by_name_func(
     struct nui_data* node, 
-    nui_utf8 key, 
+    nui_utf8 key,
     struct nui_data* out
 );
 // get_child_node_by_index
@@ -48,6 +75,8 @@ typedef enum nui_error nui_data_get_child_node_by_name_func(
 // set_value_int
 // set_value_real
 // get_num_children
+// get_last_error
+// log_error
 // acquire_reference
 // release_reference
 struct nui_data {
@@ -64,48 +93,49 @@ struct nui_data {
 // set the 'visible' property to TRUE.
 
 // Create widgets from text from a file
-enum nui_error nui_create_widgets_from_file(
-    struct nui_gui*, 
-    nui_widget_id parent, 
+NUI_API enum bool nui_create_widgets_from_file(
+    struct nui_gui*,
+    nui_widget_id parent,
     nui_utf8 filename
 );
 
 // Create widgets from text
-enum nui_error nui_create_widgets_from_text(
-    struct nui_gui*, 
-    nui_widget_id parent, 
+NUI_API enum bool nui_create_widgets_from_text(
+    struct nui_gui*,
+    nui_widget_id parent,
     nui_utf8 text
 );
 
 // Create a widget.
 //
-// If a widget with the same name already exists, the name is disambiguated with a number.
+// If a widget with the same name already exists, the name is disambiguated
+// with a number.
 //
-// 'parent' must be a widget with a 'client area'.  The new widget will be displayed in
-// the 'client area' of the parent widget.
+// 'parent' must be a widget with a 'client area'. The new widget will be
+// displayed in the 'client area' of the parent widget.
 //
-// the newly created widget may have any number of automatically created child widgets in 
-// its 'non client area' - e.g. window frame buttons.
-enum nui_error nui_create_widget(
-    struct nui_gui*, 
-    enum nui_widget_type type, 
-    nui_utf8 name, 
-    nui_widget_id parent, 
+// the newly created widget may have any number of automatically created child
+// widgets in its 'non client area' - e.g. window frame buttons.
+NUI_API bool nui_create_widget(
+    struct nui_gui*,
+    enum nui_widget_type type,
+    nui_utf8 name,
+    nui_widget_id parent,
     nui_widget_id* widget_id_out
 );
 
 // Get a list of child widgets.
-enum nui_error nui_get_widget_children(
-    struct nui_gui*, 
-    enum nui_widget_id, 
-    enum nui_widget_id* buf, 
-    nui_size buf_size, 
+NUI_API bool nui_get_widget_children(
+    struct nui_gui*,
+    enum nui_widget_id,
+    enum nui_widget_id* buf,
+    nui_size buf_size,
     nui_size* size_needed_out
 );
 
 // Get a named widget.  The name can use 'dot' notation to navigate
 // the hierarchy.
-enum nui_error nui_get_widget(
+NUI_API bool nui_get_widget(
     struct nui_gui*,
     nui_widget_id parent,
     nui_utf8 name,
@@ -113,9 +143,9 @@ enum nui_error nui_get_widget(
 );
 
 // Get/set properties.
-enum nui_error nui_get_widget_properties(
-    struct nui_gui*, 
-    nui_widget_id widget, 
+NUI_API bool nui_get_widget_properties(
+    struct nui_gui*,
+    nui_widget_id widget,
     struct nui_data* out
 );
 
@@ -124,7 +154,7 @@ enum nui_error nui_get_widget_properties(
 
 // Note: need to flesh this out.  Need to pass input from the application into the library,
 // and return any requested actions.  Need to support arbitrary input devices.
-enum nui_error nui_input(struct nui_gui*);
+NUI_API bool nui_input(struct nui_gui*);
 
 struct nui_command {
     nui_widget_id widget;
@@ -134,7 +164,7 @@ struct nui_command {
 
 // The UI doesn't have its own main loop, so the application must inform it of 
 // the passage of time.  This is used to update animations and so on.
-enum nui_error nui_update(struct nui_gui*, nui_real dt);
+NUI_API bool nui_update(struct nui_gui*, nui_real dt);
 
 // how to associate a widget with a value in the program?
 
@@ -142,15 +172,18 @@ enum nui_error nui_update(struct nui_gui*, nui_real dt);
 //   expr: "bar.qux"
 // }
 
-// how would the above expr be evaluated?   inject an interface?   some api like:
-
 struct nui_compiled_expr;
 
 // expr factory func
-typedef enum nui_error nui_compile_expr_func(nui_utf8 expr, struct nui_compiled_expr* out);
+typedef bool nui_compile_expr_func(
+    struct nui_gui*,
+    nui_utf8 expr,
+    struct nui_compiled_expr* out
+);
 
 // expr class
-typedef enum nui_error evaluate_expr_func(
+typedef bool evaluate_expr_func(
+    struct nui_gui*,
     struct nui_compiled_expr* expr, 
     struct nui_data* out
 );
@@ -166,6 +199,156 @@ struct compiled_expr {
 
 //----- Draw
 
-// This needs to output either a sequence of drawing commands as per nuklear, or something more abstract
-// to allow for greater customisation of what is displayed by the application
-enum nui_error nui_draw(struct nui_gui*);
+// This needs to output either a sequence of drawing commands as per nuklear,
+// or something more abstract to allow for greater customisation of what is
+// displayed by the application
+NUI_API bool nui_draw(struct nui_gui*);
+
+
+// ****************************************************************************
+
+#ifdef NUI_IMPLEMENT
+
+#ifndef __cplusplus
+#error NUI requires a C++ compiler.
+#endif
+
+namespace nui {
+
+    class gui {
+    public:
+        gui();
+        virtual ~gui();
+    };
+
+    class intrusive_refcount {
+    };
+
+    class data : public intrusive_refcount {
+    public:
+        data();
+        virtual ~data();
+    };
+
+    class widget {
+    public:
+        widget();
+        virtual ~widget();
+    };
+
+}
+
+struct nui_gui {
+    nui_error_code m_last_error_code;
+    std::string m_last_error_message;
+};
+
+bool nui_create_gui(struct nui_gui** out)
+{
+    assert(out);
+    *out = new nui_gui;
+}
+
+bool nui_destroy_gui(struct nui_gui* gui)
+{
+    assert(gui);
+    delete gui;
+}
+
+enum nui_error_code nui_get_last_error_code(struct nui_gui* gui)
+{
+    assert(gui);
+
+    return gui->m_gui.get_last_error_code();
+}
+
+nui_utf8 nui_get_last_error_message(struct nui_gui* gui)
+{
+    assert(gui);
+
+    return gui->m_gui.get_last_error_message().get();
+}
+
+void nui_log_error(
+    struct nui_gui* gui,
+    enum nui_error_code code,
+    nui_utf8 message
+)
+{
+    assert(gui);
+
+    gui->m_gui.log_error(code, message);
+}
+
+bool nui_create_widgets_from_file(
+    struct nui_gui* gui,
+    nui_widget_id parent,
+    nui_utf8 filename
+)
+{
+    assert(gui);
+
+    // istream (filename)
+    // create_widgets(istream)
+}
+
+bool nui_create_widgets_from_text(
+    struct nui_gui* gui,
+    nui_widget_id parent,
+    nui_utf8 text
+)
+{
+    assert(gui);
+
+    // istream(text)
+    // create_widgets(text)
+}
+
+bool nui_create_widget(
+    struct nui_gui* gui,
+    enum nui_widget_type type,
+    nui_utf8 name,
+    nui_widget_id parent,
+    nui_widget_id* widget_id_out
+)
+{
+    assert(gui);
+    // ...
+}
+
+bool nui_get_widget_children(
+    struct nui_gui* gui,
+    enum nui_widget_id,
+    enum nui_widget_id* buf,
+    nui_size buf_size,
+    nui_size* size_needed_out
+)
+{
+    assert(gui);
+    // ...
+}
+
+bool nui_get_widget(
+    struct nui_gui* gui,
+    nui_widget_id parent,
+    nui_utf8 name,
+    nui_widget_id* widget_id_out
+)
+{
+    assert(gui);
+    // ...
+}
+
+bool nui_get_widget_properties(
+    struct nui_gui* gui,
+    nui_widget_id widget,
+    struct nui_data* out
+)
+{
+    assert(gui);
+    // ...
+}
+
+#endif // NUI_IMPLEMENT
+
+#endif // NUI_
