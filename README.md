@@ -111,6 +111,23 @@ No.
 
 If new types of widget are needed, they can be implemented in the library.
 
+### Custom widgets - no, really?
+
+I think there is one concession: the application might want to embed a 'graphics
+area' or otherwise do some custom rendering to visualise a GUI element. For
+instance, an inventory item might display a rotating 3d preview of a sword or
+whatever.
+
+I think I _definitely_ want to support this sort of custom rendering (somehow!)
+but such widgets should not have custom behaviour. 
+
+Or, mark out an area as unmanaged by the GUI, so input events in there will be
+ignored, and where the application can do its own rendering.
+
+I think these capabilities are actually quite important - this library is for
+graphics-driven applications, and where else will you find a need for embedded
+graphics?
+
 ### Generating GUI from data
 
 If the application is exposing its data model, can we just generate GUI from it?
