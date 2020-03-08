@@ -26,7 +26,8 @@ enum nui_widget_type {
 
 enum nui_error_code {
   NUI_ERROR_OK = 0,
-  NUI_ERROR_UNKNOWN
+  NUI_ERROR_UNKNOWN,
+  NUI_ERROR_BUFFER_TOO_SMALL
 };
 
 /* Predeclarations */
