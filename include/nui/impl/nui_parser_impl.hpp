@@ -187,11 +187,12 @@ parse_status nui::parser::next_token(parse_status status)
 
     nui_utf8 text = status.cursor;
 
-    // TODO: multibyte
-    // TODO: CR/LF
+    // Note: you can safely search UTF-8 encoded text for ASCII characters since
+    // they are valid UTF-8 and will never be part of a multibyte sequence. As
+    // such, I *believe* the following code to be correct.
 
     // Skip leading whitespace
-    while (*text == ' ' || *text == '\r' || *text == '\n') {
+    while (*text == ' ' || *text == '\r' || *text == '\n' || *text == '\r') {
         ++text;
     }
     if (!*text) {
@@ -202,8 +203,11 @@ parse_status nui::parser::next_token(parse_status status)
 
     // Skip comments
     if (*text == '/' && *(text+1) == '/') {
-        while (*text && *text != '\n') {
+        while (*text && *text != '\n' && *text != '\r') {
             ++text;
+        }
+        if (*text == '\r') {
+          ++text;
         }
         if (*text == '\n') {
             ++text;
