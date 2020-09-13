@@ -30,9 +30,4 @@ enum nui_error_code {
   NUI_ERROR_BUFFER_TOO_SMALL
 };
 
-/* Predeclarations */
-struct nui_data;
-struct nui_gui;
-struct nui_compiled_expr;
-
 #endif

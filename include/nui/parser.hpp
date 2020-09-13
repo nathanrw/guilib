@@ -1,9 +1,9 @@
 #ifndef NUI_PARSER_HPP
 #define NUI_PARSER_HPP
 
-#include "nui/nui_types.h"
-#include "nui/impl/nui_status.hpp"
-#include "nui/impl/nui_utf8.hpp"
+#include <nui/types.h>
+#include <nui/status.hpp>
+#include <nui/utf8.hpp">
 
 namespace nui {
     class parser;

@@ -1,4 +1,4 @@
-#include "nui/impl/nui_gui.hpp"
+#include <nui/gui.hpp>
 
 nui::gui::gui()
 {

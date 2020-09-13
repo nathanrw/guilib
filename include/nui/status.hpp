@@ -1,8 +1,8 @@
 #ifndef NUI_STATUS_HPP
 #define NUI_STATUS_HPP
 
-#include "nui/nui_types.h"
-#include "nui/impl/nui_utf8.hpp"
+#include <nui/types.h>
+#include <nui/utf8.hpp>
 #include <string>
 #include <vector>
 

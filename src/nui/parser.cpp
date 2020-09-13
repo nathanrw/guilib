@@ -1,4 +1,4 @@
-#include "nui/impl/nui_parser.hpp"
+#include <nui/parser.hpp>
 
 nui::parser::parser()
 {

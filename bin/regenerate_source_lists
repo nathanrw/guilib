@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# Regenerate lists of source files. Run when files are added or removed.
+#
+# n.b. run on Windows via Git Bash.
+
+find src -iname "*.cpp" > sources.txt
+find include -iname "*.hpp" -o -iname "*.h" > headers.txt

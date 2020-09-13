@@ -192,6 +192,12 @@ serve as a benchmark.
 Need to take care that there's not too much work being created for the
 application. As I said with nuklear, it's quite pleasant in that regard.
 
+### Another approach
+
+What if I use SWIG? i.e. move away from header-only, write the C++ implementation
+I was planning on writing anyway and use THAT as the interface through use of
+SWIG to generate the wrapping?
+
 ## Building the example program
 
 ```

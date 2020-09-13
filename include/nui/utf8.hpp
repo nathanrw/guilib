@@ -1,7 +1,7 @@
 #ifndef NUI_UTF8_HPP
 #define NUI_UTF8_HPP
 
-#include "nui/nui_types.h"
+#include <nui/types.h>
 #include <istream>
 #include <string>
 
