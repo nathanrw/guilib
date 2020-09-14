@@ -7,9 +7,32 @@
 #include <string>
 
 namespace nui {
-    class gui;
     class ast;
+    class gui;
+    class property;
+    class widget;
 }
+
+
+class nui::property {
+private:
+    utf8_string m_name;
+    utf8_string m_value_string;
+    nui_int m_value_int;
+    nui_real m_value_real;
+    std::vector<std::shared_ptr<property>> m_children;
+};
+
+
+class nui::widget {
+public:
+private:
+    nui_widget_id m_widget_id;
+    widget* m_parent;
+    std::vector<std::shared_ptr<widget>> m_children;
+    std::vector<std::shared_ptr<property>> m_properties;
+};
+
 
 class nui::gui {
 public:
@@ -38,10 +61,12 @@ public:
 
     status get_widget(const utf8_string& name, nui_widget_id& out);
 
-    status get_widget_properties(nui_widget_id widget, nui::widget_properties*& out);
+    std::shared_ptr<property_cursor> get_widget_properties(nui_widget_id widget);
 
 
 private:
+    std::vector<std::shared_ptr<widget>> m_widgets;
 };
+
 
 #endif
