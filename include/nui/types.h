@@ -11,6 +11,7 @@ typedef int32_t nui_int;
 typedef uint64_t nui_size;
 typedef float nui_real;
 typedef bool nui_bool;
+typedef unsigned char nui_byte;
 
 /* Strings are utf-8 */
 typedef const char* nui_utf8;
@@ -27,7 +28,8 @@ enum nui_widget_type {
 enum nui_error_code {
   NUI_ERROR_OK = 0,
   NUI_ERROR_UNKNOWN,
-  NUI_ERROR_BUFFER_TOO_SMALL
+  NUI_ERROR_BUFFER_TOO_SMALL,
+  NUI_ERROR_ENCODING
 };
 
 #endif
