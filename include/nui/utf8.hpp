@@ -10,6 +10,7 @@ namespace nui {
     class text_reader;
     class status;
     class encoding;
+    class wcs;
     namespace encodings {
         class utf8;
         class mbcs;
@@ -60,6 +61,7 @@ public:
 
 /// The UTF-8 encoding.
 class nui::encodings::utf8 : public nui::encoding {
+public:
     utf8();
     utf8(const utf8& that) =delete;
     utf8& operator=(const utf8& that) =delete;
@@ -71,9 +73,25 @@ class nui::encodings::utf8 : public nui::encoding {
 };
 
 
+/// Utilities for working with wide strings.
+class nui::wcs {
+public:
+    wcs() = delete;
+    wcs(const wcs& that) = delete;
+    wcs& operator=(const wcs& that) = delete;
+    ~wcs() = delete;
+
+    static std::wstring from_utf8(nui_utf8 utf8);
+    static std::wstring from_utf8(const utf8_string& utf8);
+    static utf8_string to_utf8(const std::wstring& wstr);
+    static utf8_string to_utf8(const wchar_t* wstr);
+};
+
+
 /// The 'safe' ASCII encoding. This is the subset of valid 'c strings' that are
 /// also valid utf-8.
 class nui::encodings::safe_ascii : public nui::encoding {
+public:
     safe_ascii();
     safe_ascii(const safe_ascii& that) =delete;
     safe_ascii& operator=(const safe_ascii& that) =delete;
@@ -87,6 +105,7 @@ class nui::encodings::safe_ascii : public nui::encoding {
 
 /// The system mbcs encoding. Avoid!
 class nui::encodings::mbcs : public nui::encoding {
+public:
     mbcs();
     mbcs(const mbcs& that) =delete;
     mbcs& operator=(const mbcs& that) =delete;

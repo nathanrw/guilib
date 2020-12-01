@@ -1,4 +1,8 @@
 #include <nui/gui.hpp>
+#include <nui/ast.hpp>
+#include <nui/parser.hpp>
+#include <nui/assert.hpp>
+#include <fstream>
 
 nui::gui::gui()
 {
@@ -25,7 +29,7 @@ nui::status nui::gui::create_widgets_from_file(nui_widget_id parent, const utf8_
   encodings::utf8 utf8;
   std::ifstream stream(filename_mbcs);
   text_reader reader;
-  ok = text_reader.read(utf8, stream, text);
+  ok = reader.read(utf8, stream, text);
   if (!ok) {
     return ok;
   }
@@ -36,25 +40,25 @@ nui::status nui::gui::create_widgets_from_file(nui_widget_id parent, const utf8_
 nui::status nui::gui::create_widgets_from_text(nui_widget_id parent, const utf8_string& text)
 {
   // Parse an AST from the text.
-  parser parser;
+  parser parser_;
   ast ast;
-  ok = parser.parse(text, ast);
+  status ok = parser_.parse(text, ast);
   if (!ok) {
     return ok;
   }
 
-  return create_widgets_from_ast(ast);
+  return create_widgets_from_ast(parent, ast);
 }
 
-nui::status nui::gui::create_widgets_from_ast(nui_widget_id parent, const ast& ast)
+nui::status nui::gui::create_widgets_from_ast(nui_widget_id parent, const ast& tree)
 {
-  nui_status ok;
+  status ok;
   nui_widget_id current = parent;
-  switch (ast.node_type()) {
+  switch (tree.get_node_type()) {
 
     // AST root
     case ast::root: {
-      for (const ast& child : ast.children()) {
+      for (const ast& child : tree.get_children()) {
         ok = create_widgets_from_ast(current, child);
         if (!ok) {
           return ok;
@@ -68,20 +72,20 @@ nui::status nui::gui::create_widgets_from_ast(nui_widget_id parent, const ast& a
 
       // Parse the widget type from the string in the AST node.
       nui_widget_type t;
-      ok = parse_widget_type(ast.type());
+      ok = parse_widget_type(tree.get_type(), t);
       if (!ok) {
         return ok;
       }
 
       // Create a widget of the appropriate type.
       nui_widget_id id = 0;
-      ok = create_widget(t, ast.name(), parent, id);
+      ok = create_widget(t, tree.get_name(), parent, id);
       if (!ok) {
         return ok;
       }
 
       // Create sub-widgets and set properties.
-      for (const ast& child : ast.children()) {
+      for (const ast& child : tree.get_children()) {
         ok = create_widgets_from_ast(id, child);
         if (!ok) {
           return ok;
@@ -94,7 +98,7 @@ nui::status nui::gui::create_widgets_from_ast(nui_widget_id parent, const ast& a
       break;
     }
     default:
-      assert(false); // unknown type
+      NUI_ASSERT(false, "Unknown node type.");
       break;
   }
 
@@ -108,20 +112,20 @@ nui::status nui::gui::create_widget(
   nui_widget_id& widget_id_out
 )
 {
-  assert(false); // TODO
+  return status(NUI_ERROR_UNKNOWN, "Not implemented");
 }
 
 nui::status nui::gui::get_widget_children(nui_widget_id id, std::vector<nui_widget_id>& out)
 {
-  assert(false); // TODO
+  return status(NUI_ERROR_UNKNOWN, "Not implemented");
 }
 
 nui::status nui::gui::get_widget(const utf8_string& name, nui_widget_id& out)
 {
-  assert(false); // TODO
+  return status(NUI_ERROR_UNKNOWN, "Not implemented");
 }
 
-nui::status nui::gui::get_widget_properties(nui_widget_id widget, nui::widget_properties*& out)
+nui::status nui::gui::parse_widget_type(const utf8_string& type_str, nui_widget_type& out) const
 {
-  assert(false); // TODO
+  return status(NUI_ERROR_UNKNOWN, "Failed to parse widget type");
 }

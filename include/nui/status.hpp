@@ -15,10 +15,13 @@ namespace nui {
 /// an error message.
 class nui::status {
 public:
+ 
+    enum EOK { OK };
 
 
     /// The default status is OK
     status();
+    status(EOK);
 
     /// Construct a status from an error code and message.
     status(nui_error_code code, const utf8_string& message);

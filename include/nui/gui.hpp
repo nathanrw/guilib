@@ -5,11 +5,13 @@
 #include <nui/status.hpp>
 #include <nui/utf8.hpp>
 #include <string>
+#include <memory>
 
 namespace nui {
     class ast;
     class gui;
     class property;
+    class property_cursor;
     class widget;
 }
 
@@ -34,7 +36,7 @@ private:
 };
 
 
-class nui::gui {
+class NUI_API nui::gui {
 public:
 
 
@@ -65,6 +67,9 @@ public:
 
 
 private:
+
+	status parse_widget_type(const utf8_string& type_string, nui_widget_type& t) const;
+
     std::vector<std::shared_ptr<widget>> m_widgets;
 };
 

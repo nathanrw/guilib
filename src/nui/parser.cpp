@@ -1,4 +1,7 @@
 #include <nui/parser.hpp>
+#include <nui/ast.hpp>
+#include <nui/assert.hpp>
+#include <cctype>
 
 nui::parser::parser()
 {
@@ -8,7 +11,7 @@ nui::parser::~parser()
 {
 }
 
-status nui::parser::parse(const utf8_string& text, ast& out)
+nui::status nui::parser::parse(const utf8_string& text, ast& out)
 {
     // file := [entry]...
     // entry := <prop>|<widget>
@@ -40,10 +43,12 @@ status nui::parser::parse(const utf8_string& text, ast& out)
     }
 
     // make a root node for the entries.
-    out = ast(entries);
+    out = ast::make_root(entries);
+    
+    return nui::status::OK;
 }
 
-parse_status nui::parser::parse_entry(
+nui::parser::parse_status nui::parser::parse_entry(
     parse_status status,
     ast& out
 )
@@ -66,7 +71,7 @@ parse_status nui::parser::parse_entry(
     return status;
 }
 
-parse_status nui::parser::parse_widget(
+nui::parser::parse_status nui::parser::parse_widget(
     parse_status status,
     const utf8_string& type,
     ast& out
@@ -75,15 +80,15 @@ parse_status nui::parser::parse_widget(
     utf8_string name;
     if (status.token.type != token::openbrace) {
         status = parse_name(status, name);
-        if (!status) {
+        if (!status.status) {
             return status;
         }
     }
 
-    return parse_widget_contents(status, type, name, ast);
+    return parse_widget_contents(status, type, name, out);
 }
 
-parse_status nui::parser::parse_widget_contents(
+nui::parser::parse_status nui::parser::parse_widget_contents(
     parse_status status,
     const utf8_string& type,
     const utf8_string& name,
@@ -92,7 +97,7 @@ parse_status nui::parser::parse_widget_contents(
 {
     // Advance past the open brace.
     if (status.token.type != token::openbrace) {
-        status.status = status(ERROR_UNKNOWN, "Missing widget body: expecting {");
+		status.status = nui::status(NUI_ERROR_UNKNOWN, "Missing widget body: expecting {" );
         return status;
     }
     status = next_token(status);
@@ -122,7 +127,7 @@ parse_status nui::parser::parse_widget_contents(
     return status;
 }
 
-parse_status nui::parser::parse_property(
+nui::parser::parse_status nui::parser::parse_property(
     parse_status status,
     const utf8_string& name,
     ast& out
@@ -140,7 +145,7 @@ parse_status nui::parser::parse_property(
 
     // Parse the value.
     utf8_string value;
-    status = parse_value(status, value, ok);
+    status = parse_value(status, value);
     if (!status.status) {
         return status;
     }
@@ -150,13 +155,13 @@ parse_status nui::parser::parse_property(
     return status;
 }
 
-parse_status nui::parser::parse_name(
+nui::parser::parse_status nui::parser::parse_name(
     parse_status status,
     utf8_string& out
 )
 {
     if (status.token.type == token::symbol) {
-        out = status.token.value;
+        out = status.token.text;
         status = next_token(status);
         return status;
     }
@@ -165,14 +170,14 @@ parse_status nui::parser::parse_name(
     return status;
 }
 
-parse_status nui::parser::parse_value(
+nui::parser::parse_status nui::parser::parse_value(
     parse_status status,
     utf8_string& out
 )
 {
     if (status.token.type == token::symbol ||
         status.token.type == token::value) {
-        out = token.value;
+        out = status.token.text;
         status = next_token(status);
         return status;
     }
@@ -181,11 +186,11 @@ parse_status nui::parser::parse_value(
     return status;
 }
 
-parse_status nui::parser::next_token(parse_status status)
+nui::parser::parse_status nui::parser::next_token(parse_status status)
 {
-    assert(text);
-
     nui_utf8 text = status.cursor;
+	NUI_ASSERT(text, "Text should not be null.");
+
 
     // Note: you can safely search UTF-8 encoded text for ASCII characters since
     // they are valid UTF-8 and will never be part of a multibyte sequence. As
@@ -257,19 +262,21 @@ parse_status nui::parser::next_token(parse_status status)
     } else {
         // symbol
         nui_utf8 text_end = text;
-        while (*text_end && (is_alnum(*text_end) ||
+        while (*text_end && (isalnum(*text_end) ||
                              *text_end == '_' ||
                              *text_end == '.')) {
             ++text_end;
         }
         if (text_end != text) {
             size_t len = text_end - text;
-            status.text = text_end;
+            status.cursor = text_end;
             status.token = { nui::parser::token::symbol,
                              utf8_string(text, len) };
             return status;
         }
     }
 
-    status.status = status(NUI_ERROR_UNKNOWN, "Bad token");
+    status.status = nui::status(NUI_ERROR_UNKNOWN, "Bad token");
+    
+    return status;
 }

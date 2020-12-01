@@ -1,6 +1,9 @@
+include/nui/assert.hpp
 include/nui/ast.hpp
 include/nui/gui.hpp
+include/nui/nui_types.h
 include/nui/parser.hpp
+include/nui/property_cursor.hpp
 include/nui/status.hpp
 include/nui/types.h
 include/nui/utf8.hpp

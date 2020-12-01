@@ -1,3 +1,4 @@
 src/main.cpp
 src/nui/gui.cpp
 src/nui/parser.cpp
+src/nui/utf8.cpp

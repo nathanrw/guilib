@@ -1,6 +1,9 @@
 #ifndef NUI_PROPERTY_CURSOR_HPP
 #define NUI_PROPERTY_CURSOR_HPP
 
+#include <nui/types.h>
+#include <nui/status.hpp>
+
 
 namespace nui {
     class property_cursor;

@@ -3,7 +3,7 @@
 
 #include <nui/types.h>
 #include <nui/status.hpp>
-#include <nui/utf8.hpp">
+#include <nui/utf8.hpp>
 
 namespace nui {
     class parser;
@@ -67,7 +67,7 @@ private:
             eof
         };
         type type;
-        utf8_string value;
+        utf8_string text;
     };
 
     struct parse_status {

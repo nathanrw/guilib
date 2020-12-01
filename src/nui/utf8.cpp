@@ -1,12 +1,13 @@
 #include <nui/utf8.hpp>
+#include <nui/status.hpp>
 #include <locale>
 #include <codecvt>
 
 // encoding
 
-nui::encodings::encoding::encoding() = default;
+nui::encoding::encoding() = default;
 
-nui::encodings::encoding::~encoding() = default;
+nui::encoding::~encoding() = default;
 
 // utf8
 
@@ -14,14 +15,14 @@ nui::encodings::utf8::utf8() = default;
 
 nui::encodings::utf8::~utf8() = default;
 
-status nui::encodings::utf8::to_utf8(const char* bytes, size_t num_bytes, utf8_string& out) const
+nui::status nui::encodings::utf8::to_utf8(const char* bytes, size_t num_bytes, utf8_string& out) const
 {
     out = utf8_string(bytes, num_bytes);
 
     return status::OK;
 }
 
-status nui::encodings::utf8::from_utf8(const utf8_string& in, std::string& out) const
+nui::status nui::encodings::utf8::from_utf8(const utf8_string& in, std::string& out) const
 {
     out = in;
 
@@ -34,14 +35,14 @@ nui::encodings::safe_ascii::safe_ascii() = default;
 
 nui::encodings::safe_ascii::~safe_ascii() = default;
 
-status nui::encodings::safe_ascii::to_utf8(const char* bytes, size_t num_bytes, utf8_string& out) const
+nui::status nui::encodings::safe_ascii::to_utf8(const char* bytes, size_t num_bytes, utf8_string& out) const
 {
     out = utf8_string(bytes, num_bytes);
 
     return status::OK;
 }
 
-status nui::encodings::safe_ascii::from_utf8(const utf8_string& in, std::string& out) const
+nui::status nui::encodings::safe_ascii::from_utf8(const utf8_string& in, std::string& out) const
 {
     out = in;
 
@@ -54,7 +55,35 @@ nui::encodings::mbcs::mbcs() = default;
 
 nui::encodings::mbcs::~mbcs() = default;
 
-status nui::encodings::mbcs::to_utf8(const char* bytes, size_t num_bytes, utf8_string& out) const
+std::wstring nui::wcs::from_utf8(nui_utf8 utf8)
+{
+    // Note: codecvt is deprecated
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+    return cvt.from_bytes(utf8);
+}
+
+std::wstring nui::wcs::from_utf8(const utf8_string& utf8)
+{
+    // Note: codecvt is deprecated
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+    return cvt.from_bytes(utf8);
+}
+
+nui::utf8_string nui::wcs::to_utf8(const std::wstring& wstr)
+{
+    // Note: codecvt is deprecated
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+    return cvt.to_bytes(wstr);
+}
+
+nui::utf8_string nui::wcs::to_utf8(const wchar_t* wstr)
+{
+    // Note: codecvt is deprecated
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+    return cvt.to_bytes(wstr);
+}
+
+nui::status nui::encodings::mbcs::to_utf8(const char* bytes, size_t num_bytes, utf8_string& out) const
 {
     // potential optimisation: no-op when mbcs encoding == utf8
 
@@ -67,23 +96,21 @@ status nui::encodings::mbcs::to_utf8(const char* bytes, size_t num_bytes, utf8_s
     //  - required_size needs too much memory
     //  - required_size is max size_t -1 (i.e. required_size+1 == 0)
     std::vector<wchar_t> wstr_storage;
-    wstr_storage.expand(required_size+1);
+    wstr_storage.resize(required_size+1);
     size_t converted = mbstowcs(wstr_storage.data(), bytes, required_size+1);
     if (converted == (size_t)-1) {
         return status(NUI_ERROR_ENCODING, "mbcstowcs failed.");
     }
 
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
-    out = cvt.to_bytes(wstr_storage.data());
+    out = wcs::to_utf8(wstr_storage.data());
     return status::OK;
 }
 
-status nui::encodings::mbcs::from_utf8(const utf8_string& in, std::string& out) const
+nui::status nui::encodings::mbcs::from_utf8(const utf8_string& in, std::string& out) const
 {
     // potential optimisation: no-op when mbcs encoding == utf8
 
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
-    std::wstring wstr = cvt.from_bytes(in);
+    std::wstring wstr = wcs::from_utf8(in);
 
     size_t required_size = wcstombs(0, wstr.c_str(), 0);
     if (required_size == (size_t)-1) {
@@ -94,7 +121,7 @@ status nui::encodings::mbcs::from_utf8(const utf8_string& in, std::string& out) 
     //  - required_size needs too much memory
     //  - required_size is max size_t -1 (i.e. required_size+1 == 0)
     std::vector<char> str_storage;
-    str_storage.expand(required_size+1);
+    str_storage.resize(required_size+1);
     size_t converted = wcstombs(str_storage.data(), wstr.c_str(), required_size+1);
     if (converted == (size_t)-1) {
         return status(NUI_ERROR_ENCODING, "wcstombs failed.");
@@ -110,11 +137,11 @@ nui::text_reader::text_reader() = default;
 
 nui::text_reader::~text_reader() = default;
 
-status nui::text_reader::read(
+nui::status nui::text_reader::read(
     const encoding& encoding,
     std::istream& stream,
     utf8_string& out
 ) const
 {
-    // TODO
+    return status(NUI_ERROR_UNKNOWN, "Not implemented");
 }

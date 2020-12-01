@@ -2,7 +2,7 @@
 #define NUI_AST_HPP
 
 #include <nui/types.h>
-#include <nui/utf8.h>
+#include <nui/utf8.hpp>
 #include <vector>
 
 namespace nui {
@@ -31,7 +31,7 @@ public:
 
 
     /// AST node type
-    enum type { root, widget, propery };
+    enum type { root, widget, property };
 
 
     /// A default constructed ast will be a root node.
@@ -62,20 +62,20 @@ public:
 
 
     /// Get the node type.
-    type node_type() const;
+    type get_node_type() const;
 
     /// Get the node name. This is meaningful for widgets and properties.
-    const utf8_string& name() const;
+    const utf8_string& get_name() const;
 
     // Get the widget type. This is meaningful for widgets.
-    const utf8_string& type() const;
+    const utf8_string& get_type() const;
 
     /// Get the node value.  This is meaningful for properties.
-    const utf8_string& value() const;
+    const utf8_string& get_value() const;
 
     /// Get the children of this node. This is meaningful for the root and for
     /// widgets.
-    const std::vector<ast>& children() const;
+    const std::vector<ast>& get_children() const;
 
 
 private:
