@@ -1,4 +1,6 @@
-src/main.cpp
+src/nui/ast.cpp
 src/nui/gui.cpp
 src/nui/parser.cpp
+src/nui/property_cursor.cpp
+src/nui/status.cpp
 src/nui/utf8.cpp

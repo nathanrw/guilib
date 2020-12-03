@@ -18,13 +18,22 @@ conan_cmake_run(
         glfw/3.3.2
         glew/2.1.0
 	swig/4.0.1
-    BASIC_SETUP
+	catch2/2.11.1
     BUILD missing
 )
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
+
 file(STRINGS sources.txt sources)
 file(STRINGS headers.txt headers)
+add_library(nui "${sources}" "${headers}")
+target_include_directories(nui PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-add_executable(test "${sources}" "${headers}")
-target_include_directories(test PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(test ${CONAN_LIBS})
+file(STRINGS tests.txt tests)
+add_executable(tests "${tests}")
+target_link_libraries(tests nui CONAN_PKG::catch2)
+
+file(STRINGS demo-sources.txt demo_sources)
+add_executable(demo "${demo_sources}")
+target_link_libraries(demo CONAN_PKG::glfw CONAN_PKG::glew nui)

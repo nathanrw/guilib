@@ -9,6 +9,51 @@ nui::encoding::encoding() = default;
 
 nui::encoding::~encoding() = default;
 
+// converter
+
+std::wstring nui::converter::from_utf8(nui_utf8 utf8)
+{
+    // Note: codecvt is deprecated
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+    return cvt.from_bytes(utf8);
+}
+
+std::wstring nui::converter::from_utf8(const utf8_string & utf8)
+{
+    // Note: codecvt is deprecated
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+    return cvt.from_bytes(utf8);
+}
+
+nui::utf8_string nui::converter::to_utf8(const std::wstring & wstr)
+{
+    // Note: codecvt is deprecated
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+    return cvt.to_bytes(wstr);
+}
+
+nui::utf8_string nui::converter::to_utf8(const wchar_t* wstr)
+{
+    // Note: codecvt is deprecated
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+    return cvt.to_bytes(wstr);
+}
+
+nui::status nui::converter::to_utf8(const char* bytes, size_t num_bytes, const encoding& encoding, utf8_string& out)
+{
+    return encoding.to_utf8(bytes, num_bytes, out);
+}
+
+nui::status nui::converter::to_utf8(const std::string& bytes, const encoding& encoding, utf8_string& out)
+{
+    return encoding.to_utf8(bytes.c_str(), bytes.size() + 1, out);
+}
+
+nui::status nui::converter::from_utf8(const utf8_string& in, const encoding& encoding, std::string& out)
+{
+    return encoding.from_utf8(in, out);
+}
+
 // utf8
 
 nui::encodings::utf8::utf8() = default;
@@ -55,34 +100,6 @@ nui::encodings::mbcs::mbcs() = default;
 
 nui::encodings::mbcs::~mbcs() = default;
 
-std::wstring nui::wcs::from_utf8(nui_utf8 utf8)
-{
-    // Note: codecvt is deprecated
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
-    return cvt.from_bytes(utf8);
-}
-
-std::wstring nui::wcs::from_utf8(const utf8_string& utf8)
-{
-    // Note: codecvt is deprecated
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
-    return cvt.from_bytes(utf8);
-}
-
-nui::utf8_string nui::wcs::to_utf8(const std::wstring& wstr)
-{
-    // Note: codecvt is deprecated
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
-    return cvt.to_bytes(wstr);
-}
-
-nui::utf8_string nui::wcs::to_utf8(const wchar_t* wstr)
-{
-    // Note: codecvt is deprecated
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
-    return cvt.to_bytes(wstr);
-}
-
 nui::status nui::encodings::mbcs::to_utf8(const char* bytes, size_t num_bytes, utf8_string& out) const
 {
     // potential optimisation: no-op when mbcs encoding == utf8
@@ -102,7 +119,7 @@ nui::status nui::encodings::mbcs::to_utf8(const char* bytes, size_t num_bytes, u
         return status(NUI_ERROR_ENCODING, "mbcstowcs failed.");
     }
 
-    out = wcs::to_utf8(wstr_storage.data());
+    out = converter::to_utf8(wstr_storage.data());
     return status::OK;
 }
 
@@ -110,7 +127,7 @@ nui::status nui::encodings::mbcs::from_utf8(const utf8_string& in, std::string& 
 {
     // potential optimisation: no-op when mbcs encoding == utf8
 
-    std::wstring wstr = wcs::from_utf8(in);
+    std::wstring wstr = converter::from_utf8(in);
 
     size_t required_size = wcstombs(0, wstr.c_str(), 0);
     if (required_size == (size_t)-1) {

@@ -10,7 +10,7 @@ namespace nui {
     class text_reader;
     class status;
     class encoding;
-    class wcs;
+    class converter;
     namespace encodings {
         class utf8;
         class mbcs;
@@ -59,6 +59,27 @@ public:
 };
 
 
+/// Utilities for working with wide strings.
+class nui::converter {
+public:
+    converter() = delete;
+    converter(const converter& that) = delete;
+    converter& operator=(const converter& that) = delete;
+    ~converter() = delete;
+
+    // Wide strings to / from utf8
+    static std::wstring from_utf8(nui_utf8 utf8);
+    static std::wstring from_utf8(const utf8_string& utf8);
+    static utf8_string to_utf8(const std::wstring& wstr);
+    static utf8_string to_utf8(const wchar_t* wstr);
+
+    // Multibyte encodings to/from utf8
+    static status to_utf8(const char* bytes, size_t num_bytes, const encoding& encoding, utf8_string& out);
+    static status to_utf8(const std::string& bytes, const encoding& encoding, utf8_string& out);
+    static status from_utf8(const utf8_string& in, const encoding& encoding, std::string& out);
+};
+
+
 /// The UTF-8 encoding.
 class nui::encodings::utf8 : public nui::encoding {
 public:
@@ -70,21 +91,6 @@ public:
     virtual status to_utf8(const char* bytes, size_t num_bytes, utf8_string& out) const override;
 
     virtual status from_utf8(const utf8_string& in, std::string& out) const override;
-};
-
-
-/// Utilities for working with wide strings.
-class nui::wcs {
-public:
-    wcs() = delete;
-    wcs(const wcs& that) = delete;
-    wcs& operator=(const wcs& that) = delete;
-    ~wcs() = delete;
-
-    static std::wstring from_utf8(nui_utf8 utf8);
-    static std::wstring from_utf8(const utf8_string& utf8);
-    static utf8_string to_utf8(const std::wstring& wstr);
-    static utf8_string to_utf8(const wchar_t* wstr);
 };
 
 

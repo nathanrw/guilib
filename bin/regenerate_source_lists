@@ -4,5 +4,7 @@
 #
 # n.b. run on Windows via Git Bash.
 
-find src -iname "*.cpp" > sources.txt
+find src/demo -iname "*.cpp" > demo-sources.txt
+find src/nui -iname "*.cpp" > sources.txt
+find src/tests -iname "*.cpp" > tests.txt
 find include -iname "*.hpp" -o -iname "*.h" > headers.txt
