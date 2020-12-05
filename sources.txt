@@ -4,3 +4,5 @@ src/nui/parser.cpp
 src/nui/property_cursor.cpp
 src/nui/status.cpp
 src/nui/utf8.cpp
+src/nui/value_parser.cpp
+src/nui/widget_property_cursor.cpp

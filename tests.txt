@@ -1,2 +1,8 @@
 src/tests/main.cpp
+src/tests/test_ast.cpp
+src/tests/test_gui.cpp
+src/tests/test_parser.cpp
+src/tests/test_status.cpp
 src/tests/test_utf8.cpp
+src/tests/test_value_parser.cpp
+src/tests/test_widget_property_cursor.cpp

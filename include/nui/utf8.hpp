@@ -68,15 +68,15 @@ public:
     ~converter() = delete;
 
     // Wide strings to / from utf8
-    static std::wstring from_utf8(nui_utf8 utf8);
-    static std::wstring from_utf8(const utf8_string& utf8);
-    static utf8_string to_utf8(const std::wstring& wstr);
-    static utf8_string to_utf8(const wchar_t* wstr);
+    static std::wstring wstr_from_utf8(nui_utf8 utf8);
+    static std::wstring wstr_from_utf8(const utf8_string& utf8);
+    static utf8_string wstr_to_utf8(const std::wstring& wstr);
+    static utf8_string wstr_to_utf8(const wchar_t* wstr);
 
     // Multibyte encodings to/from utf8
-    static status to_utf8(const char* bytes, size_t num_bytes, const encoding& encoding, utf8_string& out);
-    static status to_utf8(const std::string& bytes, const encoding& encoding, utf8_string& out);
-    static status from_utf8(const utf8_string& in, const encoding& encoding, std::string& out);
+    static status bstr_to_utf8(const char* bytes, size_t num_bytes, const encoding& encoding, utf8_string& out);
+    static status bstr_to_utf8(const std::string& bytes, const encoding& encoding, utf8_string& out);
+    static status bstr_from_utf8(const utf8_string& in, const encoding& encoding, std::string& out);
 };
 
 

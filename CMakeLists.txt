@@ -25,15 +25,22 @@ conan_cmake_run(
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
-file(STRINGS sources.txt sources)
-file(STRINGS headers.txt headers)
+function(read_source_list filename outvar)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${filename} 
+                   ${CMAKE_CURRENT_BINARY_DIR}/${filename})
+    file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/${filename} items)
+    set(${outvar} "${items}" PARENT_SCOPE)
+endfunction()
+
+read_source_list(sources.txt sources)
+read_source_list(headers.txt headers)
 add_library(nui "${sources}" "${headers}")
 target_include_directories(nui PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-file(STRINGS tests.txt tests)
+read_source_list(tests.txt tests)
 add_executable(tests "${tests}")
 target_link_libraries(tests nui CONAN_PKG::catch2)
 
-file(STRINGS demo-sources.txt demo_sources)
+read_source_list(demo-sources.txt demo_sources)
 add_executable(demo "${demo_sources}")
 target_link_libraries(demo CONAN_PKG::glfw CONAN_PKG::glew nui)

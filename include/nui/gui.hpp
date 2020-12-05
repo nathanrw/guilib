@@ -12,12 +12,15 @@ namespace nui {
     class gui;
     class property;
     class property_cursor;
+    class widget_property_cursor;
     class widget;
 }
 
 
 class nui::property {
+public:
 private:
+    friend class nui::widget_property_cursor;
     utf8_string m_name;
     utf8_string m_value_string;
     nui_int m_value_int;
@@ -28,7 +31,13 @@ private:
 
 class nui::widget {
 public:
+    widget(nui_widget_id id, widget* parent);
+    widget(const widget& that) = delete;
+    widget& operator=(const widget& that) = delete;
+    ~widget();
 private:
+    friend class nui::gui;
+    friend class nui::widget_property_cursor;
     nui_widget_id m_widget_id;
     widget* m_parent;
     std::vector<std::shared_ptr<widget>> m_children;
@@ -67,6 +76,8 @@ public:
 
 
 private:
+
+    std::shared_ptr<widget> get_widget(nui_widget_id id) const;
 
 	status parse_widget_type(const utf8_string& type_string, nui_widget_type& t) const;
 

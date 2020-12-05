@@ -97,7 +97,7 @@ nui::parser::parse_status nui::parser::parse_widget_contents(
 {
     // Advance past the open brace.
     if (status.token.type != token::openbrace) {
-		status.status = nui::status(NUI_ERROR_UNKNOWN, "Missing widget body: expecting {" );
+		status.status = nui::status(NUI_ERROR_GENERIC, "Missing widget body: expecting {" );
         return status;
     }
     status = next_token(status);
@@ -135,7 +135,7 @@ nui::parser::parse_status nui::parser::parse_property(
 {
     // We've already parsed the name so check for the colon.
     if (status.token.type != token::colon) {
-        status.status = nui::status(NUI_ERROR_UNKNOWN, "Expected :");
+        status.status = nui::status(NUI_ERROR_GENERIC, "Expected :");
         return status;
     }
     status = next_token(status);
@@ -166,7 +166,7 @@ nui::parser::parse_status nui::parser::parse_name(
         return status;
     }
 
-    status.status = nui::status(NUI_ERROR_UNKNOWN, "Expected a symbol.");
+    status.status = nui::status(NUI_ERROR_GENERIC, "Expected a symbol.");
     return status;
 }
 
@@ -182,7 +182,7 @@ nui::parser::parse_status nui::parser::parse_value(
         return status;
     }
 
-    status.status = nui::status(NUI_ERROR_UNKNOWN, "Expected a symbol or value.");
+    status.status = nui::status(NUI_ERROR_GENERIC, "Expected a symbol or value.");
     return status;
 }
 
@@ -276,7 +276,7 @@ nui::parser::parse_status nui::parser::next_token(parse_status status)
         }
     }
 
-    status.status = nui::status(NUI_ERROR_UNKNOWN, "Bad token");
+    status.status = nui::status(NUI_ERROR_GENERIC, "Bad token");
     
     return status;
 }
