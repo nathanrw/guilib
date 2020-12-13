@@ -57,9 +57,7 @@ nui::status nui::widget_property_cursor::get_as_data(
 
 size_t nui::widget_property_cursor::number_of_children() const
 {
-    const selected_property* prop = current_selection();
-    if (!prop) return 0;
-    return prop->m_property->m_children.size();
+    return current_selection_children_container().size();
 }
 
 nui::status nui::widget_property_cursor::select_next_sibling()
@@ -102,7 +100,7 @@ nui::status nui::widget_property_cursor::select_child(nui_int index)
 nui::status nui::widget_property_cursor::select_named_child(const utf8_string& name)
 {
     std::vector<std::shared_ptr<property>>& container = current_selection_children_container();
-    for (nui_int index = 0; index <= (nui_int)container.size(); ++index) {
+    for (nui_int index = 0; index < (nui_int)container.size(); ++index) {
         if (container[index]->m_name == name) {
             m_property_stack.push_back({ container[index], (size_t)index });
             return status::OK;

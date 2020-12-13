@@ -1,3 +1,4 @@
+src/nui/assert.cpp
 src/nui/ast.cpp
 src/nui/gui.cpp
 src/nui/parser.cpp

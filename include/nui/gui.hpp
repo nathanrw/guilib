@@ -21,6 +21,7 @@ class nui::property {
 public:
 private:
     friend class nui::widget_property_cursor;
+    friend class widget;
     utf8_string m_name;
     utf8_string m_value_string;
     nui_int m_value_int;
@@ -38,6 +39,7 @@ public:
 private:
     friend class nui::gui;
     friend class nui::widget_property_cursor;
+    void add_property(const utf8_string& name);
     nui_widget_id m_widget_id;
     widget* m_parent;
     std::vector<std::shared_ptr<widget>> m_children;

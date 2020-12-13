@@ -12,15 +12,28 @@
 nui::widget::widget(nui_widget_id id, widget* parent)
     : m_widget_id(id),
       m_parent(parent)
+
 {
 }
 
 nui::widget::~widget() = default;
 
+void nui::widget::add_property(const utf8_string& name)
+{
+    std::shared_ptr<property> p = std::make_shared<property>();
+    p->m_name = name;
+    p->m_value_int = 0;
+    p->m_value_real = 0;
+    p->m_value_string = "";
+    m_properties.push_back(p);
+}
+
 // gui
 
 nui::gui::gui()
 {
+    // Create the root widget.
+    m_widgets.push_back(std::make_shared<widget>(0, nullptr));
 }
 
 nui::gui::~gui()
@@ -145,8 +158,22 @@ nui::status nui::gui::create_widget(
     if (!parent) {
         return status(NUI_ERROR_INVALID_ARGUMENT, "Parent widget does not exist");
     }
-    widget_id_out = m_widgets.size() + 1;
-    m_widgets.push_back(std::make_shared<widget>(widget_id_out, parent.get()));
+    widget_id_out = m_widgets.size();
+    std::shared_ptr<widget> w = std::make_shared<widget>(widget_id_out, parent.get());
+    w->add_property("name");
+    w->add_property("width");
+    w->add_property("height");
+    w->add_property("show_frame");
+    w->add_property("text");
+    w->add_property("action");
+    m_widgets.push_back(w);
+    parent->m_children.push_back(w);
+
+    std::shared_ptr<property_cursor> props = get_widget_properties(widget_id_out);
+    status ok = props->select_named_child("name");
+    NUI_ASSERT(ok, "name property should exist");
+    ok = props->set_as_string(name);
+    NUI_ASSERT(ok, "Should be able to set name");
 
     return status::OK;
 }
