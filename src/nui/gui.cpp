@@ -2,6 +2,7 @@
 #include <nui/ast.hpp>
 #include <nui/parser.hpp>
 #include <nui/property_cursor.hpp>
+#include <nui/widget_property_cursor.hpp>
 #include <nui/assert.hpp>
 #include <fstream>
 #include <map>
@@ -209,4 +210,13 @@ nui::status nui::gui::parse_widget_type(const utf8_string& type_str, nui_widget_
         return status::OK;
     }
     return status(NUI_ERROR_FAILED, "Failed to parse widget type");
+}
+
+std::shared_ptr<nui::property_cursor> nui::gui::get_widget_properties(nui_widget_id id)
+{
+    std::shared_ptr<widget> w = get_widget(id);
+    if (!w) {
+        return nullptr;
+    }
+    return std::make_shared<nui::widget_property_cursor>(w);
 }

@@ -101,6 +101,7 @@ nui::parser::parse_status nui::parser::parse_widget_contents(
         return status;
     }
     status = next_token(status);
+    if (!status.status) return status;
 
     // Read the widget children.
     std::vector<ast> entries;
@@ -118,6 +119,7 @@ nui::parser::parse_status nui::parser::parse_widget_contents(
         // Ok then there should be an entry.
         ast entry;
         status = parse_entry(status, entry);
+        if (!status.status) return status;
         entries.push_back(entry);
     }
 
@@ -207,14 +209,13 @@ nui::parser::parse_status nui::parser::next_token(parse_status status)
     }
 
     // Skip comments
+    // N.b. since *text is not 0, we can assume *(text+1) is a (potentially 0) character
+    // since we assume the input is a valid c string. 
     if (*text == '/' && *(text+1) == '/') {
         while (*text && *text != '\n' && *text != '\r') {
             ++text;
         }
-        if (*text == '\r') {
-          ++text;
-        }
-        if (*text == '\n') {
+        while (*text == ' ' || *text == '\r' || *text == '\n' || *text == '\r') {
             ++text;
         }
     }
@@ -226,16 +227,38 @@ nui::parser::parse_status nui::parser::next_token(parse_status status)
 
     // Try to extract a token.
 
-    if (*text == '"') {
+    if (*text == '"' || *text == '\'') {
         // string
-        nui_utf8 text_end = text+1;
-        while (*text_end && *text_end != '"') {
-            ++text_end;
+
+        // Consume first delimiter.
+        char delim = *text;
+        ++text;
+        if (!*text) {
+            status.cursor = text;
+            status.token = { nui::parser::token::eof, "" };
+            return status;
         }
-        size_t len = text_end - text;
-        status.cursor = text_end;
-        status.token = { nui::parser::token::value,
-                         utf8_string(text, len) };
+
+        // Scan to end of string
+        nui_utf8 text_begin = text;
+        while (*text && *text != delim) {
+            ++text;
+        }
+        if (!*text) {
+            status.cursor = text;
+            status.token = { nui::parser::token::eof, "" };
+            return status;
+        }
+
+        // Extract string
+        size_t len = text - text_begin;
+        utf8_string str(text_begin, len);
+
+        // Consume last delimiter
+        ++text;
+
+        status.cursor = text;
+        status.token = { nui::parser::token::value, str };
         return status;
 
     } else if (*text == '{') {

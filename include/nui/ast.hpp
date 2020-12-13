@@ -78,6 +78,10 @@ public:
     const std::vector<ast>& get_children() const;
 
 
+    /// Compare for equality
+    bool operator==(const ast& that) const;
+
+
 private:
     type m_node_type;
     utf8_string m_name;
@@ -85,6 +89,10 @@ private:
     utf8_string m_value;
     std::vector<ast> m_children;
 };
+
+
+/// Stream operator for debugging.
+std::ostream& operator<<(std::ostream& os, const nui::ast& node);
 
 
 #endif
