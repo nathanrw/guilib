@@ -41,6 +41,12 @@ public:
     virtual status set_as_string(const utf8_string& value) override;
     virtual status set_as_bool(bool value) override;
     virtual status set_as_data(const nui_byte* buffer, size_t buffer_size) override;
+    virtual status insert_before_selected(const utf8_string& name) override;
+    virtual status insert_after_selected(const utf8_string& name) override;
+    virtual status insert_into_selected(const utf8_string& name, size_t index) override;
+    virtual status append_into_selected(const utf8_string& name) override;
+    virtual status prepend_into_selected(const utf8_string& name) override;
+    virtual status delete_selected() override;
 
 private:
     // Widget is the widget whose properties the cursor is pointing at.   Property

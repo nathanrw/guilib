@@ -107,6 +107,51 @@ public:
     virtual status set_as_data(const nui_byte* buffer, size_t buffer_size) =0;
 
 
+    // Inserters and deleters.  These create and delete properties. They are
+    // not guaranteed to work.  Non-unique names will probably cause failure
+    // but this is down to the implementation.
+
+    /// @brief Insert a sibling before the currently selected element. The
+    ///        selection remains unchanged.
+    /// @param name The name of the new property.
+    /// @return OK on success, failure otherwise.
+    virtual status insert_before_selected(const utf8_string& name) = 0;
+
+    /// @brief Insert a sibling before the currently selected element. The
+    ///        selection remains unchanged.
+    /// @param name The name of the new property.
+    /// @return OK on success, failure otherwise.
+    virtual status insert_after_selected(const utf8_string& name) = 0;
+
+    /// @brief Insert a child into the currently selected element. The selection
+    ///        remains unchanged.
+    /// @param name Name of the new child.
+    /// @param index Index at which to insert.
+    /// @pre 0 <= index <= number_of_children()
+    /// @return Success or failure
+    /// 
+    virtual status insert_into_selected(const utf8_string& name, size_t index) = 0;
+
+    /// @brief Insert at the end of the selected element. The selection remains
+    ///        unchanged.
+    /// @param name Name of the new child
+    /// @return Success or failure
+    virtual status append_into_selected(const utf8_string& name) = 0;
+
+    /// @brief Insert at the start of the selected element. The selection
+    ///        remains unchanged.
+    /// @param name Name of the new child.
+    /// @return Success or failure.
+    virtual status prepend_into_selected(const utf8_string& name) = 0;
+
+    /// @brief Delete the selected element
+    /// @return OK on success, failure otherwise.
+    /// 
+    /// Note: The selection will revert to the parent element.
+    /// 
+    virtual status delete_selected() = 0;
+
+
 private:
 };
 

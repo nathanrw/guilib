@@ -19,6 +19,11 @@ namespace nui {
 
 class nui::property {
 public:
+    property();
+    property(const utf8_string& name);
+    property(const property& that) = delete;
+    property& operator=(const property& that) = delete;
+    ~property();
 private:
     friend class nui::widget_property_cursor;
     friend class widget;
@@ -39,7 +44,6 @@ public:
 private:
     friend class nui::gui;
     friend class nui::widget_property_cursor;
-    void add_property(const utf8_string& name);
     nui_widget_id m_widget_id;
     widget* m_parent;
     std::vector<std::shared_ptr<widget>> m_children;

@@ -166,6 +166,7 @@ std::vector<std::shared_ptr<nui::property>>& nui::widget_property_cursor::curren
 {
     static std::vector<std::shared_ptr<nui::property>> empty;
     if (m_property_stack.size() == 0) {
+        empty.clear();
         return empty;
     }
     if (m_property_stack.size() == 1) {
@@ -196,4 +197,51 @@ nui::widget_property_cursor::selected_property* nui::widget_property_cursor::cur
 const nui::widget_property_cursor::selected_property* nui::widget_property_cursor::current_selection() const
 {
     return const_cast<widget_property_cursor*>(this)->current_selection();
+}
+
+nui::status nui::widget_property_cursor::insert_before_selected(const utf8_string& name)
+{
+    if (m_property_stack.size() == 0) {
+        return status(NUI_ERROR_FAILED, "No selection to insert before");
+    }
+    selected_property* selection = current_selection();
+    std::vector<std::shared_ptr<property>>& container = current_selection_sibling_container();
+    container.insert(container.begin() + selection->m_index++, std::make_shared<property>());
+    return status::OK;
+}
+
+nui::status nui::widget_property_cursor::insert_after_selected(const utf8_string& name)
+{
+    if (m_property_stack.size() == 0) {
+        return status(NUI_ERROR_FAILED, "No selection to insert before");
+    }
+    selected_property* selection = current_selection();
+    std::vector<std::shared_ptr<property>>& container = current_selection_sibling_container();
+    container.insert(container.begin() + selection->m_index + 1, std::make_shared<property>(name));
+    return status::OK;
+}
+
+nui::status nui::widget_property_cursor::insert_into_selected(const utf8_string& name, size_t index)
+{
+    if (index < 0 || index > number_of_children()) {
+        return status(NUI_ERROR_INVALID_ARGUMENT, "Index out of bounds");
+    }
+    std::vector<std::shared_ptr<property>>& container = current_selection_children_container();
+    container.insert(container.begin() + index, std::make_shared<property>(name));
+    return status::OK;
+}
+
+nui::status nui::widget_property_cursor::append_into_selected(const utf8_string& name)
+{
+    return insert_into_selected(name, number_of_children());
+}
+
+nui::status nui::widget_property_cursor::prepend_into_selected(const utf8_string& name)
+{
+    return insert_into_selected(name, 0);
+}
+
+nui::status nui::widget_property_cursor::delete_selected()
+{
+    return status(NUI_ERROR_FAILED, "Deletion is not supported");
 }
